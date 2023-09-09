@@ -6,6 +6,7 @@ const { nikParser } = require("nik-parser")
 const Field = require("../field/model")
 const User = require("./model")
 const Transaction = require("../transaction/model")
+const History = require("../history/model")
 
 module.exports = {
     // update to professional account
@@ -50,7 +51,7 @@ module.exports = {
         }
     },
 
-    // professional feature
+    // API feature for user with professional account
     postField: async(req, res) => {
         try {
             const { nameField, nameSport, location, desc, open, closed } = req.body
@@ -173,12 +174,35 @@ module.exports = {
         }
     },
 
-    // user transaction
-    transaction: async(req, res) => {
+    // API for regular account
+    getField: async(req, res) => {
+        try {
+            const field = await Field.find({ location: req.user.location })
+
+            console.log(req.user)
+
+            res.status(200).json({ data: field })
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
+        }
+    },
+    getDetailField: async(req, res) => {
+        try {
+            const { fieldId } = req.params
+
+            const field = await Field.findOne({ _id: fieldId })
+
+            res.status(200).json({ data: field })
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
+        }
+    },
+
+    postTransaction: async(req, res) => {
         try {
             const { field, package: packageId, payment: paymentId, when, startTime, endTime } = req.body
             
-            // ambil salah satu package dan payment di dalam array, ambil sesuai dengan id
+            // ambil package dan payment didalam array sesuai id yang di input
             const foundPackage = await Field.findOne({
                 "packages": {
                     $elemMatch: {
@@ -200,7 +224,7 @@ module.exports = {
             const res_package = foundPackage.packages.find((package) => package._id.equals(packageId))
             const res_payment = foundPayment.payments.find((payment) => payment._id.equals(paymentId))
 
-            // tambah transaction
+            // tambah ke model transaction
             const transaction = new Transaction({
                 field,
                 package: {
@@ -220,7 +244,7 @@ module.exports = {
             })
             await transaction.save()
 
-            // hapus transaction
+            // hapus dari model transaction setelah 24 jam jika dia memesan today, dan hapus setelah 48 jam jika dia memesan tomorrow
             if(when === "tomorrow") {
                 setTimeout(async function() {
                     await Transaction.findOneAndRemove({ _id: transaction._id })
@@ -230,6 +254,26 @@ module.exports = {
                     await Transaction.findOneAndRemove({ _id: transaction._id })
                 }, 86400000)
             }
+
+            // tambahkan ke model history, agar user dapat melihat lapangan mana saja yang sudah dia gunakan kemarin kemarin
+            const history = new History({
+                field,
+                package: {
+                    hour: res_package.hour,
+                    price: res_package.price
+                },
+                payment: {
+                    paymentName: res_payment.paymentName,
+                    noRek: res_payment.noRek,
+                    noTelp: res_payment.noTelp
+                },
+                when,
+                startTime,
+                endTime,
+                user: req.user._id,
+                total: res_package.price + 10000
+            })
+            await history.save()
 
             res.status(201).json({ 
                 field,
@@ -261,6 +305,23 @@ module.exports = {
                   message: "Terjadi kesalahan server."
                 });
             }
+        }
+    },
+    getTransaction: async(req, res) => {
+        try {
+            
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
+        }
+    },
+
+    getHistory: async(req, res) => {
+        try {
+            const history = await History.find({ user: req.user._id })
+
+            res.status(200).json({ history })
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
         }
     }
 }

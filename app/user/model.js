@@ -17,7 +17,8 @@ let userSchema = mongoose.Schema({
     },
     location: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Location"
+        ref: "Location",
+        require: [true, "location is required!"]
     },
     professional: {
         type: Boolean,
