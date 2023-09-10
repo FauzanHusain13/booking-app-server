@@ -225,73 +225,79 @@ module.exports = {
             const res_payment = foundPayment.payments.find((payment) => payment._id.equals(paymentId))
 
             // tambah ke model transaction
-            const transaction = new Transaction({
-                field,
-                package: {
-                    hour: res_package.hour,
-                    price: res_package.price
-                },
-                payment: {
-                    paymentName: res_payment.paymentName,
-                    noRek: res_payment.noRek,
-                    noTelp: res_payment.noTelp
-                },
-                when,
-                startTime,
-                endTime,
-                user: req.user._id,
-                total: res_package.price + 10000
-            })
-            await transaction.save()
-
-            // hapus dari model transaction setelah 24 jam jika dia memesan today, dan hapus setelah 48 jam jika dia memesan tomorrow
-            if(when === "tomorrow") {
-                setTimeout(async function() {
-                    await Transaction.findOneAndRemove({ _id: transaction._id })
-                }, 86400000 * 2)
+            // cek apakah user: req.user._id sudah ada dalam model transaction
+            const modelTransaction = await Transaction.findOne({ user: req.user._id })
+            if(modelTransaction) {
+                res.status(422).json({ message: "You can only order 1 field" })
             } else {
-                setTimeout(async function() {
-                    await Transaction.findOneAndRemove({ _id: transaction._id })
-                }, 86400000)
+                const transaction = new Transaction({
+                    field,
+                    package: {
+                        hour: res_package.hour,
+                        price: res_package.price
+                    },
+                    payment: {
+                        paymentName: res_payment.paymentName,
+                        noRek: res_payment.noRek,
+                        noTelp: res_payment.noTelp
+                    },
+                    when,
+                    startTime,
+                    endTime,
+                    user: req.user._id,
+                    total: res_package.price + 10000
+                })
+                await transaction.save()
+    
+                // hapus dari model transaction setelah 24 jam jika dia memesan today, dan hapus setelah 48 jam jika dia memesan tomorrow
+                if(when === "tomorrow") {
+                    setTimeout(async function() {
+                        await Transaction.findOneAndRemove({ _id: transaction._id })
+                    }, 86400000 * 2)
+                } else {
+                    setTimeout(async function() {
+                        await Transaction.findOneAndRemove({ _id: transaction._id })
+                    }, 86400000)
+                }
+    
+                // tambahkan ke model history, agar user dapat melihat lapangan mana saja yang sudah dia gunakan kemarin kemarin
+                const history = new History({
+                    field,
+                    package: {
+                        hour: res_package.hour,
+                        price: res_package.price
+                    },
+                    payment: {
+                        paymentName: res_payment.paymentName,
+                        noRek: res_payment.noRek,
+                        noTelp: res_payment.noTelp
+                    },
+                    when,
+                    startTime,
+                    endTime,
+                    user: req.user._id,
+                    total: res_package.price + 10000
+                })
+                await history.save()
+    
+                res.status(201).json({ 
+                    field,
+                    package: {
+                        hour: res_package.hour,
+                        price: res_package.price
+                    },
+                    payment: {
+                        paymentName: res_payment.paymentName,
+                        noRek: res_payment.noRek,
+                        noTelp: res_payment.noTelp
+                    },
+                    when,
+                    startTime,
+                    endTime,
+                    user: req.user._id,
+                    total: res_package.price + 10000
+                })
             }
-
-            // tambahkan ke model history, agar user dapat melihat lapangan mana saja yang sudah dia gunakan kemarin kemarin
-            const history = new History({
-                field,
-                package: {
-                    hour: res_package.hour,
-                    price: res_package.price
-                },
-                payment: {
-                    paymentName: res_payment.paymentName,
-                    noRek: res_payment.noRek,
-                    noTelp: res_payment.noTelp
-                },
-                when,
-                startTime,
-                endTime,
-                user: req.user._id,
-                total: res_package.price + 10000
-            })
-            await history.save()
-
-            res.status(201).json({ 
-                field,
-                package: {
-                    hour: res_package.hour,
-                    price: res_package.price
-                },
-                payment: {
-                    paymentName: res_payment.paymentName,
-                    noRek: res_payment.noRek,
-                    noTelp: res_payment.noTelp
-                },
-                when,
-                startTime,
-                endTime,
-                user: req.user._id,
-                total: res_package.price + 10000
-            })
         } catch (err) {
             if (err.name === "ValidationError") {
                 return res.status(422).json({
@@ -307,9 +313,12 @@ module.exports = {
             }
         }
     },
-    getTransaction: async(req, res) => {
+    getDetailTransaction: async(req, res) => {
         try {
-            
+            const transaction = await Transaction.findOne({ user: req.user._id })
+                .populate("field", "nameField imageField")
+
+            res.status(200).json({ data: transaction })
         } catch (err) {
             res.status(500).json({ message: "Internal server error" })
         }

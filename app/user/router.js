@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { updateToPro, postField, postPackage, postPayment, postTransaction, getHistory, getField, getDetailField } = require("./controller");
+const { updateToPro, postField, postPackage, postPayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction } = require("./controller");
 const { isLoginUser } = require('../middleware/auth');
 
 const multer = require("multer")
@@ -24,6 +24,7 @@ router.post('/field/:fieldId/payment', isLoginUser, postPayment)
 router.get('/field', isLoginUser, getField)
 router.get('/:fieldId/field', isLoginUser, getDetailField)
 router.post('/transaction', isLoginUser, postTransaction)
+router.get('/transaction', isLoginUser, getDetailTransaction)
 router.get('/history', isLoginUser, getHistory)
 
 module.exports = router;
