@@ -7,6 +7,7 @@ module.exports = {
 
             res.render("admin/location", {
                 location,
+                title: "Location"
             })
         } catch (err) {
             throw err

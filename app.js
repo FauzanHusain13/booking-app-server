@@ -4,8 +4,10 @@ var path = require('path');
 var methodOverride = require("method-override")
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require("express-session")
 
 // konfigurasi halaman admin
+const adminRouter = require('./app/admin/router');
 const locationRouter = require('./app/location/router');
 
 // konfigurasi API
@@ -19,6 +21,12 @@ const URL = "/api/v1";
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { }
+}))
 app.use(methodOverride("_method"))
 app.use(logger('dev'));
 app.use(express.json());
@@ -27,7 +35,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // konfigurasi haaman admin
-app.use('/', locationRouter);
+app.use('/', adminRouter);
+app.use('/location', locationRouter);
 
 // konfigurasi API
 app.use(`${URL}/users`, userRouter)

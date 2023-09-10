@@ -3,6 +3,13 @@ const User = require("../user/model")
 const { jwtKey } = require("../../config")
 
 module.exports = {
+    isLoginAdmin: (req, res, next) => {
+        if(req.session.admin === null || req.session.admin === undefined) {
+            res.redirect("/");
+        } else {
+            next();
+        }
+    },
     isLoginUser: async(req, res, next) => {
         try {
             const token = req.headers.authorization ? req.headers.authorization.replace("Bearer ", "") : null;
