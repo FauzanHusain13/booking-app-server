@@ -115,6 +115,45 @@ module.exports = {
             }
         }
     },
+    deleteField: async(req, res) => {
+        try {
+            const { fieldId } = req.params
+           
+            const field = await Field.findOne({
+                _id: fieldId,
+                owner: req.user._id
+            })
+            if(!field) {
+                res.status(400).json({ message: "Field is not found!" })
+            }
+
+            await Field.findOneAndRemove({
+                _id: fieldId,
+                owner: req.user._id
+            })
+
+            let currentImage = `${rootPath}/public/uploads/field/${field.imageField}`;
+
+            if(fs.existsSync(currentImage)){
+                fs.unlinkSync(currentImage)
+            }
+
+            res.status(201).json({ data: "Delete success!" })
+        } catch (err) {
+            if (err.name === "ValidationError") {
+                return res.status(422).json({
+                  error: 1,
+                  message: err.message,
+                  fields: err.errors
+                });
+            } else {
+                return res.status(500).json({
+                  error: 1,
+                  message: "Terjadi kesalahan server."
+                });
+            }
+        }
+    },
     postPackage: async(req, res) => {
         try {
             const payload = req.body
@@ -129,6 +168,50 @@ module.exports = {
             const updatedField = await field.save()
 
             res.status(200).json({ data: updatedField })
+        } catch (err) {
+            if (err.name === "ValidationError") {
+                return res.status(422).json({
+                  error: 1,
+                  message: err.message,
+                  fields: err.errors
+                });
+            } else {
+                return res.status(500).json({
+                  error: 1,
+                  message: "Terjadi kesalahan server."
+                });
+            }
+        }
+    },
+    deletePackage: async(req, res) => {
+        try {
+            const { fieldId, packageId } = req.params
+
+            const field = await Field.findOne({
+                _id: fieldId,
+                owner: req.user._id
+            })
+            if(!field){
+                return res.status(401).json({ message: "Field not found" })
+            }
+            
+            // cari indeks paket yang akan dihapus berdasarkan packageId
+            const packageIndex = field.packages.findIndex(
+                (package) => package._id.toString() === packageId
+            );
+    
+            // Jika packageIndex tidak ditemukan, kirim respons 404
+            if (packageIndex === -1) {
+                return res.status(404).json({ message: "Package not found" });
+            }
+    
+            // Hapus paket dari array packages
+            field.packages.splice(packageIndex, 1);
+    
+            // Simpan perubahan ke basis data
+            const updatedField = await field.save();
+    
+            res.status(200).json({ data: updatedField });
         } catch (err) {
             if (err.name === "ValidationError") {
                 return res.status(422).json({
@@ -171,6 +254,50 @@ module.exports = {
                   message: "Terjadi kesalahan server."
                 });
             }
+        }
+    },
+    deletePayment: async(req, res) => {
+        try {
+            const { fieldId, paymentId } = req.params
+
+            const field = await Field.findOne({
+                _id: fieldId,
+                owner: req.user._id
+            })
+            if(!field){
+                return res.status(404).json({ message: "Field not found" })
+            }
+
+            // cari indeks paket yang akan dihapus berdasarkan paymentId
+            const paymentIndex = field.payments.findIndex(
+                (payment) => payment._id.toString() === paymentId
+            );
+    
+            // Jika paymentIndex tidak ditemukan, kirim respons 404
+            if (paymentIndex === -1) {
+                return res.status(404).json({ message: "Payment not found" });
+            }
+    
+            // Hapus paket dari array payments
+            field.payments.splice(paymentIndex, 1);
+    
+            // Simpan perubahan ke basis data
+            const updatedField = await field.save();
+    
+            res.status(200).json({ data: updatedField });
+        } catch (err) {
+            if (err.name === "ValidationError") {
+                return res.status(422).json({
+                  error: 1,
+                  message: err.message,
+                  fields: err.errors
+                });
+            } else {
+                return res.status(500).json({
+                  error: 1,
+                  message: "Terjadi kesalahan server."
+                });
+            }  
         }
     },
 

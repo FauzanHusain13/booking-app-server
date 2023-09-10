@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { updateToPro, postField, postPackage, postPayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction } = require("./controller");
+const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction } = require("./controller");
 const { isLoginUser } = require('../middleware/auth');
 
 const multer = require("multer")
@@ -17,8 +17,13 @@ router.put('/professional', isLoginUser, updateToPro)
 
 // feature for user with professional accout
 router.post('/field', upload.single("imageField"), isLoginUser, postField)
+router.delete('/field/:fieldId', isLoginUser, deleteField)
+
 router.post('/field/:fieldId/package', isLoginUser, postPackage)
+router.delete('/field/:fieldId/package/:packageId', isLoginUser, deletePackage)
+
 router.post('/field/:fieldId/payment', isLoginUser, postPayment)
+router.delete('/field/:fieldId/payment/:paymentId', isLoginUser, deletePayment)
 
 // user
 router.get('/field', isLoginUser, getField)
