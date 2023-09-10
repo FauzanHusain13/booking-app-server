@@ -327,6 +327,7 @@ module.exports = {
     getHistory: async(req, res) => {
         try {
             const history = await History.find({ user: req.user._id })
+                .populate("field", "nameField imageField")
 
             res.status(200).json({ history })
         } catch (err) {
