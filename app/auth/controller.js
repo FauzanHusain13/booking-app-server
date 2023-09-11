@@ -34,6 +34,7 @@ module.exports = {
                             id: user._id,
                             username: user.username,
                             email: user.email,
+                            location: user.location,
                             professional: user.professional
                         }
                     }, jwtKey)

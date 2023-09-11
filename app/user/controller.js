@@ -4,12 +4,52 @@ const { rootPath } = require("../../config")
 const { nikParser } = require("nik-parser")
 
 const Field = require("../field/model")
+const Location = require("../location/model")
 const User = require("./model")
 const Transaction = require("../transaction/model")
 const History = require("../history/model")
 
 module.exports = {
-    // update to professional account
+    // edit account
+    getAllLocation: async(req, res) => {
+        try {
+            const location = await Location.find()
+
+            res.status(200).json({ data: location })
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
+        }
+    },
+    editLocation: async(req, res) => {
+        try {
+            const { location = "" } = req.body
+            const payload = {}
+
+            if(location.length) payload.location = location
+
+            let user = await User.findOne({ _id: req.user._id })
+            user = await User.findOneAndUpdate({
+                _id: req.user._id
+            }, {
+                ...payload
+            }, { new: true, runValidators: true })
+
+            res.status(201).json({ location: user.location })
+        } catch (err) {
+            if (err.name === "ValidationError") {
+                return res.status(422).json({
+                  error: 1,
+                  message: err.message,
+                  fields: err.errors
+                });
+            } else {
+                return res.status(500).json({
+                  error: 1,
+                  message: "Terjadi kesalahan server."
+                });
+            }
+        }
+    },
     updateToPro: async(req, res) => {
         try {
             const { nik } = req.body
