@@ -9,6 +9,7 @@ const session = require("express-session")
 // konfigurasi halaman admin
 const adminRouter = require('./app/admin/router');
 const locationRouter = require('./app/location/router');
+const sportRouter = require('./app/sport/router');
 
 // konfigurasi API
 const authRouter = require("./app/auth/router")
@@ -37,6 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // konfigurasi haaman admin
 app.use('/', adminRouter);
 app.use('/location', locationRouter);
+app.use('/sport', sportRouter);
 
 // konfigurasi API
 app.use(`${URL}/users`, userRouter)
