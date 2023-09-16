@@ -345,7 +345,7 @@ module.exports = {
     getField: async(req, res) => {
         try {
             const field = await Field.find({ location: req.user.location })
-                .select("_id nameField imageField sport location owner")
+                .select("_id nameField imageField sport location owner open closed")
                 .populate("sport")
                 .populate("location")
                 .populate("owner")
