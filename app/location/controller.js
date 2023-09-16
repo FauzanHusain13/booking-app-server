@@ -29,8 +29,9 @@ module.exports = {
             const data = await Location({ province, city })
             await data.save()
 
-            res.redirect("/")
+            res.redirect("/location")
         } catch (err) {
+            res.redirect("/location")
             throw err
         }
     },

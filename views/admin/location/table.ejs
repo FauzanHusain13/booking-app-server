@@ -25,7 +25,7 @@
                     <%= location[i].city %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <form action="/delete/<%= location[i]._id %>?_method=DELETE" method="POST" class="flex gap-1">
+                    <form action="/location/delete/<%= location[i]._id %>?_method=DELETE" method="POST" class="flex gap-1">
                         <button class="text-sm bg-red-500 hover:bg-red-600 transition text-white p-2 flex gap-1">
                           <i class="bi bi-archive-fill"></i>
                           <p>delete</p>
