@@ -94,7 +94,7 @@ module.exports = {
     // API feature for user with professional account
     postField: async(req, res) => {
         try {
-            const { nameField, nameSport, location, desc, open, closed } = req.body
+            const { nameField, sport, location, desc, open, closed } = req.body
 
             if(req.file) {
                 let tmp_path = req.file.path;
@@ -112,7 +112,7 @@ module.exports = {
                         const field = new Field({
                             nameField,
                             imageField: filename,
-                            nameSport,
+                            sport,
                             location,
                             desc,
                             owner: req.user._id,
@@ -345,8 +345,12 @@ module.exports = {
     getField: async(req, res) => {
         try {
             const field = await Field.find({ location: req.user.location })
+                .select("_id nameField imageField sport location owner")
+                .populate("sport")
+                .populate("location")
+                .populate("owner")
 
-            console.log(req.user)
+            console.log(req.user.location)
 
             res.status(200).json({ data: field })
         } catch (err) {
@@ -358,6 +362,9 @@ module.exports = {
             const { fieldId } = req.params
 
             const field = await Field.findOne({ _id: fieldId })
+                .populate("sport")
+                .populate("location")
+                .populate("owner")
 
             res.status(200).json({ data: field })
         } catch (err) {

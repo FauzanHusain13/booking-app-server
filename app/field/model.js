@@ -33,9 +33,9 @@ let fieldSchema = mongoose.Schema({
         type: String, 
         require: [true, "image field is required!"]
     },
-    nameSport: {
-        type: String,
-        require: [true, "sport name is required!"]
+    sport: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Sport"
     },
     location: {
         type: mongoose.Schema.Types.ObjectId,
