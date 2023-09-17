@@ -30,6 +30,9 @@ let historySchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
+    tax: {
+        type: Number
+    },
     total: {
         type: Number
     }
