@@ -6,8 +6,8 @@ let transactionSchema = mongoose.Schema({
         ref: "Field"
     },
     package: {
-       hour: { type: Number },
-       price: { type: Number } 
+       hour: { type: Number, require: [true, "hour is required!"] },
+       price: { type: Number }
     },
     payment: {
         paymentName: { type: String },

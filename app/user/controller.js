@@ -382,7 +382,6 @@ module.exports = {
         }
     },
 
-    // fixing feature, tidak bisa memesan di bawah jam buka dan diatas jam tutup
     postTransaction: async(req, res) => {
         try {
             const { field, payment: paymentId, when, startTime, endTime } = req.body
@@ -524,7 +523,8 @@ module.exports = {
     getDetailTransaction: async(req, res) => {
         try {
             const transaction = await Transaction.findOne({ user: req.user._id })
-                .populate("field", "nameField imageField")
+                .populate("field")
+                .populate("user")
 
             res.status(200).json({ data: transaction })
         } catch (err) {
@@ -535,7 +535,7 @@ module.exports = {
     getHistory: async(req, res) => {
         try {
             const history = await History.find({ user: req.user._id })
-                .populate("field", "nameField imageField")
+                .populate("field")
 
             res.status(200).json({ history })
         } catch (err) {
