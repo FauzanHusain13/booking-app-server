@@ -29,6 +29,7 @@ module.exports = {
             res.status(500).json({ message: "Internal server error" })
         }
     },
+
     // edit account
     editLocation: async(req, res) => {
         try {
@@ -379,6 +380,20 @@ module.exports = {
             res.status(200).json({ data: field })
         } catch (err) {
             res.status(500).json({ message: "Internal server error" })
+        }
+    },
+    searchField: async(req, res) => {
+        try {
+            const { nameField } = req.body
+
+            const field = await Field.find({ nameField: { $regex: nameField, $options: 'i' }})
+
+            res.status(201).json({ data: field })
+        } catch (err) {
+            return res.status(500).json({
+                error: 1,
+                message: "Internal server error"
+            });
         }
     },
 
