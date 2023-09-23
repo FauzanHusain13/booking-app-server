@@ -20,6 +20,11 @@ let userSchema = mongoose.Schema({
         ref: "Location",
         require: [true, "location is required!"]
     },
+    sport: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Sport",
+        require: [true, "sport is required!"]
+    },
     professional: {
         type: Boolean,
         default: false

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction, getAllLocation, editLocation, searchField } = require("./controller");
+const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction, getAllLocation, searchField, editProfile } = require("./controller");
 const { isLoginUser } = require('../middleware/auth');
 
 const multer = require("multer")
@@ -14,7 +14,7 @@ const upload = multer({
 
 // edit account
 router.get('/location', isLoginUser, getAllLocation)
-router.put('/location', isLoginUser, editLocation)
+router.put('/edit', isLoginUser, editProfile)
 router.put('/professional', isLoginUser, updateToPro)
 
 // feature for user with professional accout

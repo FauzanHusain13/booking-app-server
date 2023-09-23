@@ -6,13 +6,14 @@ const { jwtKey } = require("../../config")
 module.exports = {
     register: async(req, res) => {
         try {
-            const { username, email, password, location } = req.body;
+            const { username, email, password, location, sport } = req.body;
 
             const newUser = new User({
                 username,
                 email,
                 password,
-                location
+                location,
+                sport
             })
 
             const savedUser = await newUser.save()
@@ -35,6 +36,7 @@ module.exports = {
                             username: user.username,
                             email: user.email,
                             location: user.location,
+                            sport: user.sport,
                             professional: user.professional
                         }
                     }, jwtKey)

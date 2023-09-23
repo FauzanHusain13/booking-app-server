@@ -31,12 +31,13 @@ module.exports = {
     },
 
     // edit account
-    editLocation: async(req, res) => {
+    editProfile: async(req, res) => {
         try {
-            const { location = "" } = req.body
+            const { location = "", sport = "" } = req.body
             const payload = {}
 
             if(location.length) payload.location = location
+            if(sport.length) payload.sport = sport
 
             let user = await User.findOne({ _id: req.user._id })
             user = await User.findOneAndUpdate({
@@ -45,7 +46,10 @@ module.exports = {
                 ...payload
             }, { new: true, runValidators: true })
 
-            res.status(201).json({ location: user.location })
+            res.status(201).json({ data: {
+                location: user.location,
+                sport: user.sport
+            }})
         } catch (err) {
             if (err.name === "ValidationError") {
                 return res.status(422).json({
@@ -355,13 +359,11 @@ module.exports = {
     // API for regular account
     getField: async(req, res) => {
         try {
-            const field = await Field.find({ location: req.user.location })
+            const field = await Field.find({ location: req.user.location, sport: req.user.sport })
                 .select("_id nameField imageField sport location owner open closed")
                 .populate("sport")
                 .populate("location")
                 .populate("owner")
-
-            console.log(req.user.location)
 
             res.status(200).json({ data: field })
         } catch (err) {
