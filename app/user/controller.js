@@ -355,6 +355,40 @@ module.exports = {
             }  
         }
     },
+    getMyfield: async(req, res) => {
+        try {
+            const field = await Field.find({ owner: req.user._id })
+                .select("nameField open closed sport location")
+                .populate("sport")
+                .populate("location")
+
+            res.status(200).json({ data: field })
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
+        }
+    },
+    getSchedules: async(req, res) => {
+        try {
+            const { fieldId } = req.params
+            const transaction = await Transaction.find({ field: fieldId })
+                .select("user startTime endTime total payment")
+                .populate("user", "username")
+
+            res.status(200).json({ data: transaction })
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
+        }
+    },
+    getDetailSchedule: async(req, res) => {
+        try {
+            const { transactionId } = req.params
+
+            const transaction = await Transaction.find({ _id: transactionId })
+            res.status(200).json({ data: transaction })
+        } catch (err) {
+            res.status(500).json({ message: "Internal server error" })
+        }
+    },
 
     // API for regular account
     getField: async(req, res) => {

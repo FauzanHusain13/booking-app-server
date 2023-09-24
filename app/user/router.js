@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction, getAllLocation, searchField, editProfile } = require("./controller");
+const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction, getAllLocation, searchField, editProfile, getMyfield, getDetailSchedule, getSchedules } = require("./controller");
 const { isLoginUser } = require('../middleware/auth');
 
 const multer = require("multer")
@@ -26,6 +26,10 @@ router.delete('/field/:fieldId/package/:packageId', isLoginUser, deletePackage)
 
 router.post('/field/:fieldId/payment', isLoginUser, postPayment)
 router.delete('/field/:fieldId/payment/:paymentId', isLoginUser, deletePayment)
+
+router.get('/myfields', isLoginUser, getMyfield)
+router.get('/schedules/:fieldId', isLoginUser, getSchedules)
+router.get('/schedule/detail/:transactionId', isLoginUser, getDetailSchedule)
 
 // user
 router.post('/field/search', isLoginUser, searchField)
