@@ -369,21 +369,37 @@ module.exports = {
     },
     getSchedules: async(req, res) => {
         try {
-            const { fieldId } = req.params
-            const transaction = await Transaction.find({ field: fieldId })
-                .select("user startTime endTime total payment")
-                .populate("user", "username")
+            const { fieldId } = req.params;
+            if (!fieldId) return res.status(404).json({ message: "id field is wrong!" });
 
-            res.status(200).json({ data: transaction })
+            const field = await Field.findOne({ _id: fieldId, owner: req.user._id });
+            if (!field) {
+              return res.status(404).json({ message: "Field not found!" });
+            }
+
+            const transaction = await Transaction.find({ field: field._id })
+                .select("user field startTime endTime total payment")
+                .populate("user", "username")
+                .populate("field", "owner")
+            
+            res.status(200).json({ data: transaction });
         } catch (err) {
             res.status(500).json({ message: "Internal server error" })
         }
     },
     getDetailSchedule: async(req, res) => {
         try {
-            const { transactionId } = req.params
+            const { fieldId, transactionId } = req.params
+            if(!transactionId) return res.status(404).json({ message: "id transaction is wrong!" })
 
-            const transaction = await Transaction.find({ _id: transactionId })
+            const transaction = await Transaction.findOne({ 
+                _id: transactionId,
+                field: {
+                    _id: fieldId,
+                    owner: req.user._id
+                }
+            }).populate("field", "owner")
+
             res.status(200).json({ data: transaction })
         } catch (err) {
             res.status(500).json({ message: "Internal server error" })

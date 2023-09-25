@@ -29,7 +29,7 @@ router.delete('/field/:fieldId/payment/:paymentId', isLoginUser, deletePayment)
 
 router.get('/myfields', isLoginUser, getMyfield)
 router.get('/schedules/:fieldId', isLoginUser, getSchedules)
-router.get('/schedule/detail/:transactionId', isLoginUser, getDetailSchedule)
+router.get('/schedule/:fieldId/:transactionId', isLoginUser, getDetailSchedule)
 
 // user
 router.post('/field/search', isLoginUser, searchField)
