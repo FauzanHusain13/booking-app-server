@@ -30,5 +30,28 @@ module.exports = {
                 error: 'Not authorized to access this'
             })
         }
+    },
+    isProUser: async(req, res, next) => {
+        try {
+            const token = req.headers.authorization ? req.headers.authorization.replace("Bearer ", "") : null;
+            const data = jwt.verify(token, jwtKey)
+
+            const user = await User.findOne({ _id: data.user.id })
+            if(!user) {
+                throw new Error()
+            } else if(user.professional === true) {
+                req.user = user;
+                req.token = token;
+                next()
+            } else {
+                res.status(401).json({
+                    error: 'This account is not professional!'
+                }) 
+            }
+        } catch (err) {
+            res.status(401).json({
+                error: 'Not authorized to access this'
+            })
+        }
     }
 }
