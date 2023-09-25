@@ -370,7 +370,7 @@ module.exports = {
     getSchedules: async(req, res) => {
         try {
             const { fieldId } = req.params;
-            if (!fieldId) return res.status(404).json({ message: "id field is wrong!" });
+            if (!fieldId) return res.status(404).json({ message: "id field not found!" });
 
             const field = await Field.findOne({ _id: fieldId, owner: req.user._id });
             if (!field) {
@@ -390,7 +390,7 @@ module.exports = {
     getDetailSchedule: async(req, res) => {
         try {
             const { fieldId, transactionId } = req.params
-            if(!transactionId) return res.status(404).json({ message: "id transaction is wrong!" })
+            if(!transactionId) return res.status(404).json({ message: "id transaction not found!" })
 
             const transaction = await Transaction.findOne({ 
                 _id: transactionId,
