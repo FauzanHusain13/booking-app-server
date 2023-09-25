@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction, getAllLocation, searchField, editProfile, getMyfield, getDetailSchedule, getSchedules } = require("./controller");
-const { isLoginUser } = require('../middleware/auth');
+const { isLoginUser, isProUser } = require('../middleware/auth');
 
 const multer = require("multer")
 const upload = multer({ 
@@ -18,18 +18,18 @@ router.put('/edit', isLoginUser, editProfile)
 router.put('/professional', isLoginUser, updateToPro)
 
 // feature for user with professional accout
-router.post('/field', upload.single("imageField"), isLoginUser, postField)
-router.delete('/field/:fieldId', isLoginUser, deleteField)
+router.post('/field', upload.single("imageField"), isLoginUser, isProUser, postField)
+router.delete('/field/:fieldId', isLoginUser, isProUser, deleteField)
 
-router.post('/field/:fieldId/package', isLoginUser, postPackage)
-router.delete('/field/:fieldId/package/:packageId', isLoginUser, deletePackage)
+router.post('/field/:fieldId/package', isLoginUser, isProUser, postPackage)
+router.delete('/field/:fieldId/package/:packageId', isLoginUser, isProUser, deletePackage)
 
-router.post('/field/:fieldId/payment', isLoginUser, postPayment)
-router.delete('/field/:fieldId/payment/:paymentId', isLoginUser, deletePayment)
+router.post('/field/:fieldId/payment', isLoginUser, isProUser, postPayment)
+router.delete('/field/:fieldId/payment/:paymentId', isLoginUser, isProUser, deletePayment)
 
-router.get('/myfields', isLoginUser, getMyfield)
-router.get('/schedules/:fieldId', isLoginUser, getSchedules)
-router.get('/schedule/:fieldId/:transactionId', isLoginUser, getDetailSchedule)
+router.get('/myfields', isLoginUser, isProUser, getMyfield)
+router.get('/schedules/:fieldId', isLoginUser, isProUser, getSchedules)
+router.get('/schedule/:fieldId/:transactionId', isLoginUser, isProUser, getDetailSchedule)
 
 // user
 router.post('/field/search', isLoginUser, searchField)
