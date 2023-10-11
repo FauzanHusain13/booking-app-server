@@ -5,6 +5,7 @@ var methodOverride = require("method-override")
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const session = require("express-session")
+const cors = require("cors")
 
 // konfigurasi halaman admin
 const adminRouter = require('./app/admin/router');
@@ -16,6 +17,7 @@ const authRouter = require("./app/auth/router")
 const userRouter = require("./app/user/router")
 
 const app = express();
+app.use(cors())
 const URL = "/api/v1";
 
 // view engine setup

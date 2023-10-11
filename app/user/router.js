@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction, getAllLocation, searchField, editProfile, getMyfield, getDetailSchedule, getSchedules } = require("./controller");
+const { updateToPro, postField, deleteField, postPackage, deletePackage, postPayment, deletePayment, postTransaction, getHistory, getField, getDetailField, getDetailTransaction, getAllLocation, searchField, editProfile, getMyfield, getDetailSchedule, getSchedules, getAllSport } = require("./controller");
 const { isLoginUser, isProUser } = require('../middleware/auth');
 
 const multer = require("multer")
@@ -13,7 +13,8 @@ const upload = multer({
 })
 
 // edit account
-router.get('/location', isLoginUser, getAllLocation)
+router.get('/location', getAllLocation)
+router.get('/sport', getAllSport)
 router.put('/edit', isLoginUser, editProfile)
 router.put('/professional', isLoginUser, updateToPro)
 
