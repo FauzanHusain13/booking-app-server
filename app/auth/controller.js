@@ -25,7 +25,10 @@ module.exports = {
     login: async(req, res) => {
         const { email, password } = req.body
 
-        User.findOne({ email }).then((user) => {
+        User.findOne({ email })
+            .populate("location")
+            .populate("sport")
+            .then((user) => {
             if(user) {
                 const checkPassword = bcrypt.compareSync(password, user.password)
   
@@ -35,8 +38,15 @@ module.exports = {
                             id: user._id,
                             username: user.username,
                             email: user.email,
-                            location: user.location,
-                            sport: user.sport,
+                            location: {
+                                id: user.location._id,
+                                province: user.location.province,
+                                city: user.location.city
+                            },
+                            sport: {
+                                id: user.sport._id,
+                                nameSport: user.sport.nameSport
+                            },
                             professional: user.professional
                         }
                     }, jwtKey)

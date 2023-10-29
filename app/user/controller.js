@@ -39,7 +39,7 @@ module.exports = {
             if(location.length) payload.location = location
             if(sport.length) payload.sport = sport
 
-            let user = await User.findOne({ _id: req.user._id })
+            let user = await User.findOne({ _id: req.user.id })
             user = await User.findOneAndUpdate({
                 _id: req.user._id
             }, {
@@ -398,7 +398,9 @@ module.exports = {
                     _id: fieldId,
                     owner: req.user._id
                 }
-            }).populate("field", "owner")
+            })
+                .populate("field", "nameField owner")
+                .populate("user", "username")
 
             res.status(200).json({ data: transaction })
         } catch (err) {
