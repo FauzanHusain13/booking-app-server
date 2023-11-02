@@ -61,4 +61,13 @@ let fieldSchema = mongoose.Schema({
     payments: [paymentSchema]
 }, { timestamps : true })
 
+fieldSchema.path("nameField").validate(async function(value) {
+    try {
+        const count = await this.model("Field").countDocuments({ nameField: value })
+        return !count
+    } catch (err) {
+        throw err
+    }
+}, attr => `${attr.value} is already!`)
+
 module.exports = mongoose.model("Field", fieldSchema);

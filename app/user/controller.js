@@ -440,7 +440,7 @@ module.exports = {
         try {
             const { nameField } = req.body
 
-            const field = await Field.find({ nameField: { $regex: nameField, $options: 'i' }})
+            const field = await Field.find({ nameField: { $regex: nameField, $options: 'i' }}).populate("location")
 
             res.status(201).json({ data: field })
         } catch (err) {
@@ -606,7 +606,7 @@ module.exports = {
             const history = await History.find({ user: req.user._id })
                 .populate("field")
 
-            res.status(200).json({ history })
+            res.status(200).json({ data: history })
         } catch (err) {
             res.status(500).json({ message: "Internal server error" })
         }
